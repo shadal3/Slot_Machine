@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Slot Machine</title>
+	<link href="css/style.css" rel = "stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="js/index.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+</head>
+<body>
+	
+
+	<div class = "wrapper">
+		<div id="container-for-reels" class="reels-container">
+			<div id="wheel1" class="wheel"></div>
+			<div id="wheel2" class="wheel"></div>
+			<div id="wheel3" class="wheel"></div>
+		</div>
+	</div>
+
+	<div class="win-balance-spin-container">
+		<div class = "balance">
+			<p class = "left-side">CREDIT</p>
+			<p id = "credit" class = "right-side">0</p>
+		</div>
+		<h1 class = "win-table">WIN</h1>
+		<button disabled = "true" class = "spin">SPIN</button>
+	</div>
+	
+	<input type="text" name="fname" id="input-credit" placeholder="Integer in range 0 ... 5000" required>
+	<input type="submit" value="Submit" onclick="updateCredit()">
+	
+</body>
+</html>
