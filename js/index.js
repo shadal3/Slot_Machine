@@ -1,33 +1,35 @@
 const SLOTS_PER_REEL = 10;
 const REEL_RADIUS = (266 / 2) / Math.tan (Math.PI / SLOTS_PER_REEL);
 const IMAGE_ARRAY = ['bar-3', 'bar', 'bar-2', 'seven', 'cherry'];
+var previousTotal = 0;
+var currentTotal = 0;
 
 
 
-/* In reel they will be seen in top-line (TOP-BOTTOM case)
- * 0 - Сherry
+/* In reel they will be seen in BOTTOM-line (TOP-BOTTOM case) (TOP + 3)
+ * 0 - barx3
+ * 1 - bar
+ * 2 - barx2
+ * 3 - seven
+ * 4 - cherry
+ * 5 - barx3
+ * 6 - bar
+ * 7 - barx2
+ * 8 - seven
+ * 9 - cherry
+*/ 
+
+/* In reel they will be seen in TOP-line (TOP-BOTTOM case) (BOT - 3)
+ * 0 - cherry
  * 1 - barx3
  * 2 - bar
  * 3 - barx2
  * 4 - seven
- * 5 - Cherry
+ * 5 - cherry
  * 6 - barx3
  * 7 - bar
  * 8 - barx2
  * 9 - seven
-*/ 
-
-/* In reel they will be seen in top-line (TOP-BOTTOM case)
- * 0 - seven
- * 1 - cherry
- * 2 - barx3
- * 3 - bar
- * 4 - barx2
- * 5 - seven
- * 6 - cherry
- * 7 - barx3
- * 8 - bar
- * 9 - barx2
 */ 
 
 /* In reel they will be seen in center (Center Case)
@@ -42,6 +44,8 @@ const IMAGE_ARRAY = ['bar-3', 'bar', 'bar-2', 'seven', 'cherry'];
  * 8 - barx3
  * 9 - bar
 */ 
+
+
 
 
 function createSlots (wheel) {
@@ -67,6 +71,10 @@ function getSeed() {
 	return Math.floor(Math.random()*(SLOTS_PER_REEL));
 }
 
+function getTopCenterBottom() {
+	return Math.floor(Math.random()*(SLOTS_PER_REEL - 1));
+}
+
 function spin(timer) {
 
 	var bctSeed = [-1,-1,-1]; //Bottom, Top, Center seed;
@@ -81,126 +89,162 @@ function spin(timer) {
 
 	   while (parseInt(previousSeed) == seed) {
 	   		seed = getSeed();
-	   		console.log("seed has changed on " + seed);
 	   }
 
-	   var centerOrTopBottom = getSeed();
+	   var centerOrTopOrBottom = getTopCenterBottom();
 
-	   if (centerOrTopBottom % 2 == 0) { /*Bottom-Top*/
-	   		bctSeed[i - 1] = 'TB' + seed; 
-	   		$('#wheel'+ i).attr('class', 'wheel spin-TB-' + seed)
-	   					  .css('animation', 'back-spin 1s, spin-TB-' + seed + ' ' + (timer + i * 0.5) + 's');
-	   } else { /*Center*/
+	   // TT - Top, BB - bottom, CC- center
+
+
+	   if (centerOrTopOrBottom >= 0 &&  centerOrTopOrBottom < 3) {
+	   		bctSeed[i - 1] = 'TT' + seed; 
+	   		$('#wheel'+ i).attr('class', 'wheel spin-TT-' + seed)
+	   					  .css('animation', 'back-spin 1s, spin-TT-' + seed + ' ' + (timer + i * 0.5) + 's');
+
+	   	} else if (centerOrTopOrBottom >= 3 && centerOrTopOrBottom < 6 ) {
+	   		bctSeed[i - 1] = 'BB' + seed; 
+	   		$('#wheel'+ i).attr('class', 'wheel spin-BB-' + seed)
+	   					  .css('animation', 'back-spin 1s, spin-BB-' + seed + ' ' + (timer + i * 0.5) + 's');
+	   	} else {
 	   		bctSeed[i - 1] = 'CC' + seed;
-	   		$('#wheel'+ i).attr('class', 'wheel spin-CO-' + seed)
-	   					  .css('animation', 'back-spin 1s, spin-CO-' + seed + ' ' + (timer + i * 0.5) + 's');
-	   }
+	   		$('#wheel'+ i).attr('class', 'wheel spin-CC-' + seed)
+	   					  .css('animation', 'back-spin 1s, spin-CC-' + seed + ' ' + (timer + i * 0.5) + 's');
+	   	}
 	   	
  	}
 
- 	checkWinComb(bctSeed);
+ 	var playerWinCombinations = checkWinComb(bctSeed);
+
+ 	if (previousTotal != currentTotal)
+ 		blinksAndIncrement(playerWinCombinations);
 }
 
 function checkWinComb(data) {
 
-	var dictTB = {
-		2000: ["555", "000", "550", "500", "005", "055", "050", "505"],
-		4000: ['444', '999', '449', '494', '944', '994', '949', '994'],
-		150: ["555", "000", "550", "500", "005", "055", "050", "505", "444",
-		"999", "449", "499", "994", "944", "949", "494"],
-		75: ["004", "044", "440", "400", "404", "040", "009", "099", "990", "900", "909", "090",
-		"554", "544", "445", "455", "454", "545", "559", "599", "995", "955", "959", "595",
-		"115", "155", "551", "511", "515", "151", "110", "100", "001", "011", "010", "101", 
-		"556", "566", "665", "655", "656", "565", "660", "600", "006", "066", "060", "606"],
-		50: ["111", "666", "116", "166", "661", "611", "616", "161",
-		"222", "777", "227", "277", "772", "722", "727", "272"],
-		20: ["333", "888", "338", "388", "883", "833", "838", "383",
-		"444", "999", "449", "499", "994", "944", "949", "494"],
-		10: ["222", "777", "227", "277", "772", "722", "727", "272",
-		"333", "888", "338", "388", "883", "833", "838", "383"],
-		5: ["113", "133", "331", "311", "313", "131", "118", "188", "881", "811", "818", "181",
-		"112", "122", "221", "211", "212", "121", "117", "177", "771", "711", "717", "171",
-		"663", "633", "336", "366", "363", "636", "668", "688", "886", "866", "868", "686",
-		"662", "622", "226", "266", "262", "626", "667", "677", "776", "766", "767", "676",
-		"332", "322", "223", "233", "232", "323","337", "377", "773", "733", "737", "373",
-		"882", "822", "228", "288", "282", "828", "887", "877", "778", "788", "787", "878",
-		"224", "244", "442", "422", "424", "242", "229", "299", "992", "922", "929", "292",
-		"223", "233", "332", "322", "323", "232", "228", "288", "882", "822", "828", "282",
-		"774", "744", "447", "477", "474", "747", "779", "799", "997", "977", "979", "797",
-		"773", "733", "337", "377", "373", "737", "778", "788", "887", "877", "878", "787",
-		"443", "433", "334", "344", "343", "434","448", "488", "884", "844", "848", "484",
-		"993", "933", "339", "399", "393", "939", "998", "988", "889", "899", "898", "989",
-		"132", "123", "321", "312", "213", "231"]
-	};
+			countTopBottom = 0;
+			countCenter = 0;
+			playerWinCombinations = [];
 
-	var dictCC = {
-		1000: ['222', '777', '227', '272', '722', '772', '727', '277'],
-		150: ["111", "666", "116", "166", "661", "611", "616", "161"],
-		75: ["112", "122", "221", "211", "212", "121", "117", "177", "771", "711", "717", "171",
-		"662", "622", "226", "266", "262", "626", "667", "677", "776", "766", "767", "676"],
-		50: ["333", "888", "338", "388", "883", "833", "838", "383"],
-		20: ["000", "555", "005", "055", "550", "500", "505", "050"],
-		10: ["444", "999", "449", "499", "994", "944", "949", "494"],
-		5: ["330", "300", "003", "033", "030", "303", "335", "355", "553", "533", "535", "353",
-		"334", "344", "443", "433", "434", "343", "339", "399", "993", "933", "939", "393",
-		"880", "800", "008", "088", "080", "808", "885", "855", "558", "588", "585", "858",
-		"884", "844", "448", "488", "484", "848", "889", "899", "998", "988", "989", "898",
-		"004", "044", "440", "400", "404", "040", "009", "099", "990", "900", "909", "090",
-		"554", "544", "445", "455", "454", "545", "559", "599", "995", "955", "959", "595"]
-	};
-
-	
-	if (data[0].slice(0,2) == data[1].slice(0,2))
-		if(data[1].slice(0,2) == data[2].slice(0,2)) {
-			TopBotOrCent = data[0].slice(0,2);
-			playerComb = '' + data[0].slice(2) + data[1].slice(2) + data[2].slice(2);
-			
-			console.log(TopBotOrCent);
-			console.log(playerComb);
-
-			if (TopBotOrCent == 'TB') {
-				for (var key in dictTB) {
-					for (var i = 0; i < dictTB[key].length; i++) {
-						if (dictTB[key][i] == playerComb) {
-							console.log('WIN');
-							console.log(key);
-						}
-					} 
-
-				}
-
-			} else {
-				for (var key in dictCC) {
-					for (var i = 0; i < dictCC[key]; i++) {
-						if (dictCC[key][i] == playerComb) {
-							console.log('WIN');
-							console.log(key);
-						}
-					} 
-
+			for (var i = 0; i < 3; i++) {
+				if (data[i].slice(0, 2) == 'TT' || data[i].slice(0, 2) == 'BB') {
+					countTopBottom += 1;
+				} else {
+					countCenter += 1;
 				}
 			}
+
+			playerComb = '' + data[0].slice(2) + data[1].slice(2) + data[2].slice(2);
+			
+
+			if (countTopBottom == 3) {
+				var playerComb = '';
+				for (var i = 0; i < 3; i++) {
+					if (data[i].slice(0, 2) == 'TT')
+						playerComb += data[i].slice(2);
+					else 
+						playerComb += (((parseInt(data[i].slice(2)) - 3) + 10) % 10).toString();
+				}
+
+				for (var key in dictTT) {
+					for (var i = 0; i < dictTT[key].length; i++) {
+						if (dictTT[key][i] == playerComb) {
+							playerWinCombinations.push('TT' + playerComb);
+							currentTotal += parseInt(key);	
+						}
+					} 
+
+				}
+
+			} if (countTopBottom == 3) {
+
+				var playerComb = '';
+				for (var i = 0; i < 3; i++) {
+					if (data[i].slice(0, 2) == 'BB')
+						playerComb += data[i].slice(2);
+					else 
+						playerComb += ((parseInt(data[i].slice(2)) + 3) % 10).toString();
+				}
+
+				for (var key in dictBB) {
+					for (var i = 0; i < dictBB[key].length; i++) {						
+						if (dictBB[key][i] == playerComb) {
+							playerWinCombinations.push('BB' + playerComb);
+							currentTotal += parseInt(key);	
+						}
+					} 
+				}
+			} if (countCenter == 3) {
+
+				var playerComb = '';
+				playerComb = '' + data[0].slice(0,2) + data[1].slice(0,2) + data[2].slice(0,2);  
+				for (var key in dictCC) {
+					for (var i = 0; i < dictCC[key].length; i++) {
+						if (dictCC[key][i] == playerComb) {
+							playerWinCombinations.push('CC' + playerComb);
+							currentTotal += parseInt(key);	
+						}
+					} 
+				}
+			}
+
+			return playerWinCombinations;
 		}
-	}
 
-// All combinations was calculated with a help of this function
+function blinksAndIncrement(data) {
 
-function combinations(str) {
-    console.log(str[0]);
-    console.log(str[1]);
+			
+		targetSlot = '';
+		targetSlotReflected = '';
 
-    var tempArray = [];
+		setTimeout(function() {
+			for (var j = 0; j < data.length; j++) {
+				for (var i = 1; i < 4; i++) {
 
-    tempArray.push(str[0].repeat(3));
-    tempArray.push(str[1].repeat(3));
-    tempArray.push(str[0].repeat(2) + str[1]);
-    tempArray.push(str[0] + str[1].repeat(2));
-    tempArray.push(str[1].repeat(2) + str[0]);
-    tempArray.push(str[1] + str[0].repeat(2));
-    tempArray.push(str[1] + str[0] + str[1]);
-    tempArray.push(str[0] + str[1] + str[0]);
+					if (data[j].slice(0, 2) == "BB") { 
+						targetSlot = (parseInt(data[j].charAt(i + 1)) + 1) % 10;
+						targetSlotReflected = (targetSlot + 5) % 10;
+					}
 
-    console.log(tempArray);
+					if (data[j].slice(0, 2) == "TT") {
+						targetSlot = (parseInt(data[j].charAt(i + 1))) % 10;
+						targetSlotReflected = (targetSlot + 5) % 10;
+					}
+
+					$('#wheel'+ i).find('*').each(function() {
+						
+						if ($(this).index() == targetSlot || $(this).index() == targetSlotReflected) {
+							$(this).css('animation-name', 'blink-slot')
+							.css('animation-duration', '2.0s');
+						}
+					});
+				}
+			}
+		}, 2960);
+
+		setTimeout(function() {
+			for (var i = 1; i < 4; i++) {
+				$('#wheel'+ i).find('*').each(function() {
+					$(this).css('animation-name', '')
+					.css('animation-duration', '');
+				});
+			}
+		}, 5000);
+
+		setTimeout(function() {
+			$("#win-window").attr('class', 'blink-win-border');
+		}, 3000);
+
+		setTimeout(function() {
+			$({value: previousTotal}).animate({value: currentTotal}, {
+				duration: 2000,
+				easing:'swing', 
+				step: function() {$('#win-coins').text((Math.round(this.value)))}		
+			})}, 3000);
+
+		setTimeout(function() {
+			$("#win-window").attr('class', 'win-table');
+			previousTotal = currentTotal;
+		}, 4500);
 
 }
 
@@ -233,10 +277,98 @@ function updateCredit() {
 function takeOneCoin() {
 	var credit = parseInt($('#credit').text());
 	credit = credit - 1;
+
+	if (credit < 0) {
+		Swal.fire({
+  		  	  type: 'error',
+  		  	  title: 'Oops...',
+  		  	  text: 'You have not got any coins more, refresh a page',
+		})
+
+		$('.spin').off('click');
+		return false;
+	}
+
 	$('#credit').text(credit);
+
 }
 
 $(document).ready(function() {
+
+	//Generate of all possible winning combinations
+
+	const BB4000 = Combinatorics.baseN(['4', '9'], 3).toArray(); // bottom
+	const TT2000 = Combinatorics.baseN(['0', '5'], 3).toArray(); // top
+	const CC1000 = Combinatorics.baseN(['2', '7'], 3).toArray(); //center
+	const TT150 = Combinatorics.baseN(['4', '9'], 3).toArray() //top
+	const BB150 = Combinatorics.baseN(['3', '8'], 3).toArray();;
+	const CC150 = Combinatorics.baseN(['1', '6'], 3).toArray();; 
+	const TT75 = Combinatorics.baseN(['0','5', '4', '9'], 3).toArray()
+	.filter(function (el) {
+		return !(TT150.includes(el) || TT2000.includes(el))
+	})
+	const BB75 = Combinatorics.baseN(['4','9','3','8'], 3).toArray()
+	.filter(function (el) {
+		return !(BB4000.includes(el) || (BB150.includes(el)))
+	});
+	const CC75 = Combinatorics.baseN(['1', '6', '2', '7']).toArray()
+	.filter(function (el) {
+		return !(CC150.includes(el) || CC1000.includes(el))
+	});
+	const TT50 = CC150; // 1, 6
+	const BB50 = TT2000; // 0, 5
+	const CC50 = BB150; //3, 8
+	const TT20 = BB150; //3 ,8
+	const BB20 = CC1000; //2, 7
+	const CC20 = TT2000; //0, 5
+	const TT10 = CC1000; //	2, 7
+	const BB10 = CC150; //1, 6
+	const CC10 = BB4000; //4, 9
+
+	const TT5 = Combinatorics.baseN(['3', '8', '2', '7', '1', '6'], 3).toArray().
+	filter(function (el) {
+		return !(TT50.includes(el) || TT10.includes(el) || TT20.includes(el))
+	});
+
+	const BB5 = Combinatorics.baseN(['0', '5', '2', '7', '1', '6'], 3).toArray().
+	filter(function(el) {
+		return !(BB50.includes(el) || BB10.includes(el) || BB20.includes(el))
+	});
+
+	const CC5 = Combinatorics.baseN(['3', '8', '4', '9', '0', '5'], 3).toArray().
+	filter(function (el) {
+		return !(CC50.includes(el) || CC20.includes(el) || CC10.includes(el))
+	});
+
+	dictTT = {
+		2000: TT2000,
+		150: TT150,
+		50: TT50,
+		75: TT75,
+		20: TT20,
+		10: TT10,
+		5: TT5
+	};
+
+	dictBB = {
+		4000: BB4000,
+		150: BB150,
+		75: BB75,
+		50: BB50,
+		20: BB20,
+		10: BB10,
+		5: BB5
+	};
+
+	dictCC = {
+		1000: CC1000,
+		150: CC150,
+		75: CC75,
+		50: CC50,
+		20: CC20,
+		10: CC10,
+		5: CC5
+	};	
 
 	var countWheels = $("#container-for-reels div").length;
 
@@ -247,9 +379,22 @@ $(document).ready(function() {
  	//spin start
  	$('.spin').on('click', function(){
 
- 		takeOneCoin();
+ 		if (takeOneCoin() == false) {
+ 			return 0;
+ 		}
+
+ 		for (var i = 0; i < 3; i++) {
+
+ 			$('#wheel' + i).find('*').each(function() {
+ 				console.log($(this));
+ 				$(this).css('animation-name', 'none');
+ 						
+ 			})
+ 		}
 
  		$(this).attr("disabled", true);
+
+ 		$('.wheel').css('margin-top', '0px');
 
  		setTimeout(function() {
  			$('.spin').attr("disabled", false);

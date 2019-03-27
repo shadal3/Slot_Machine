@@ -6,6 +6,7 @@
 	<link href="css/style.css" rel = "stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="js/index.js"></script>
+	<script src="js/combinatorics.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
@@ -27,8 +28,14 @@
 			<p class = "left-side">CREDIT</p>
 			<p id = "credit" class = "right-side">0</p>
 		</div>
-		<h1 class = "win-table">WIN</h1>
+		<div id = win-window class = "win-table"></h1>
+			<p class = "left-side">WIN</p>
+			<p id = "win-coins" class = "right-side">0</p>
+		</div>
+
 		<button disabled = "true" class = "spin">SPIN</button>
+
+
 	</div>
 	
 	<input type="text" name="fname" id="input-credit" placeholder="Integer in range 0 ... 5000" required>
