@@ -1,45 +1,109 @@
-<!DOCTYPE html>
+ 
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>Slot Machine</title>
 	<link href="css/style.css" rel = "stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/lib/control/iconselect.css" >
+    <script type="text/javascript" src="lib/control/iconselect.js"></script>
+    <link rel="stylesheet" media="screen" href="particles.js/demo/css/style.css">    
+    <script type="text/javascript" src="lib/iscroll.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="js/index.js"></script>
 	<script src="js/combinatorics.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
 </head>
 <body>
-	
 
-	<div class = "wrapper">
-		<div id="container-for-reels" class="reels-container">
-			<div id="wheel1" class="wheel"></div>
-			<div id="wheel2" class="wheel"></div>
-			<div id="wheel3" class="wheel"></div>
+
+<!-- particles.js container -->
+<div id="particles-js">
+	<div style="position: absolute; left: 100px; width: 80%; white-space: nowrap;">
+		<div id='mode' style="float: left;">
+			<button onclick="userModeOn(this);">User</button>
+			<button onclick="developerModeOn(this)">Developer</button>
+			
+			<div id="container-for-developer" style="display: none;">
+				<div style="width: 130px;">
+					<div class="developer-mode-TCB-text">REEL1</div>
+					<div class="developer-mode-TCB-name">
+						<select id = "developer-mode-TCB-select1"> 
+							<option value="Top">Top</option>
+							<option value="Bottom">Bottom</option>
+							<option value="Center">Center</option>
+						</select>
+					</div>
+					<div class="developer-mode-TCB-picture" id="my-icon-select1"></div>
+				</div>
+				<div style="width: 130px;">
+					<div class="developer-mode-TCB-text">REEL2</div>
+					<div class="developer-mode-TCB-name">
+						<select id = "developer-mode-TCB-select2"> 
+							<option value="Top">Top</option>
+							<option value="Bottom">Bottom</option>
+							<option value="Center">Center</option>
+						</select>
+					</div>
+					<div style="display: inline-block;" id="my-icon-select2"></div>
+				</div>
+				<div style="width: 130px;">
+					<div class="developer-mode-TCB-text">REEL3</div>
+					<div class="developer-mode-TCB-name">
+						<select id = "developer-mode-TCB-select3"> 
+							<option value="Top">Top</option>
+							<option value="Bottom">Bottom</option>
+							<option value="Center">Center</option>
+						</select>
+					</div>
+					<div style="display: inline-block;" id="my-icon-select3"></div>
+				</div>
+
+				<label>
+					<input type="checkbox" id="xray">
+					<h1 style="color: white;">Show inner workings</h1>
+				</label>
+			</div>
+		</div>
+
+		<div style="display: inline-block; width: 50%; margin-left: 270px; margin-top: 20px;">
+			<div id="container-for-reels" class="reels-container">
+				<div id="wheel1" class="wheel"></div>
+				<div id="wheel2" class="wheel"></div>
+				<div id="wheel3" class="wheel"></div>
+			</div>
+		</div>
+
+
+		<div style="margin-left: 250px;" class="win-balance-spin-container">
+			<div class = "balance">
+				<p class = "left-side">CREDIT</p>
+				<p id = "credit" class = "right-side">0</p>
+			</div>
+			<div id = win-window class = "win-table"></h1>
+				<p class = "left-side">WIN</p>
+				<p id = "win-coins" class = "right-side">0</p>
+			</div>
+
+			<button disabled = "true" class = "spin">SPIN</button>
+		</div>
+
+
+		<div style="margin-left: 100px;">
+			<input type="text" name="fname" id="input-credit" placeholder="Integer in range 0 ... 5000" required>
+			<input type="submit" value="Submit" onclick="updateCredit(this)">
+			
 		</div>
 	</div>
 
-	<div class="win-balance-spin-container">
-		<div class = "balance">
-			<p class = "left-side">CREDIT</p>
-			<p id = "credit" class = "right-side">0</p>
-		</div>
-		<div id = win-window class = "win-table"></h1>
-			<p class = "left-side">WIN</p>
-			<p id = "win-coins" class = "right-side">0</p>
-		</div>
+</div>
 
-		<button disabled = "true" class = "spin">SPIN</button>
+<script src="particles.js/particles.js"></script>
+<script src="particles.js/demo/js/app.js"></script>
+<script src="particles.js/demo/js/lib/stats.js"></script>
 
-
-	</div>
-	
-	<input type="text" name="fname" id="input-credit" placeholder="Integer in range 0 ... 5000" required>
-	<input type="submit" value="Submit" onclick="updateCredit()">
+		
 	
 </body>
 </html>

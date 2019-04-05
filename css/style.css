@@ -2,7 +2,7 @@
 
 html {
 	height: 100%;
-	background: linear-gradient(180deg, rgba(108,31,176,1) 0%, rgba(237,237,237,1) 86%);
+	background: black;
 	background-size: cover;
 	background-repeat: no-repeat;
 }
@@ -15,6 +15,34 @@ input {
 }
 
 
+.developer-mode-TCB-text {
+	display: inline-block;
+	text-align: left;
+	vertical-align: center;
+	line-height: 45px;
+	margin-top: 20px;
+	color: white;
+	text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px red, 0 0 20px violet, 0 0 30px violet, 0 0 40px violet, 0 0 55px violet, 0 0 75px violet
+	
+}
+
+.developer-mode-TCB-name {
+	display: inline-block;
+	margin-left: 5px;
+	vertical-align: center;
+	line-height: 45px;
+	
+}
+
+[id*="my-icon-select"] { /*wildCard*/
+	display: inline-block;
+	float: right;
+	vertical-align: middle;
+	line-height: 45px;
+	margin-top: 20px;
+}
+
+
 #input-credit {
 	margin-top: 10px;
 	margin-left: 16%;
@@ -22,19 +50,47 @@ input {
 }
 
 
-.spin:hover, .win-table:hover, .balance:hover  {
-	border: 2px solid white ;
+.spin:hover, .win-table:hover, .balance:hover, #mode>button:hover  {
+	border: 2px solid white !important;
+}
+
+#mode {
+	margin-top: 150px;
+	display: inline-block;
+}
+
+#mode > button {
+	background: -webkit-linear-gradient(top, #915fcb 0%,#6312ae 50%,#9f48de 100%);
+	display: block;
+	color: blue;
+	text-align: center;
+	color: white;
+	margin: 4px;
+	margin-bottom: 20px;
+	border: 2px solid black;
+	border-radius: 20px;
+	padding: 10%;
+	font-size: 25px;
+	font-weight: bold;
+	transition: border 0.5s;
+}
+
+#mode > button:nth-child(1) {
+	margin-left: 30px;
+	border: solid 2px rgb(66, 244, 244);
+}
+
+.slot-choose-container {
+	display: inline-block;
 }
 
 
 .reels-container {
+	
 	display: flex;
 	justify-content: space-between;
-	width: 50%;
+	width: 700px;
 	height: 300px;
-	margin-top: 50px;
-	margin-left: auto;
-	margin-right: auto;
 	padding: 2%;
 	padding-top: 200px;
 	border: 8px ridge #9a08a3;
@@ -70,14 +126,14 @@ input {
 
 	display: flex;
 	justify-content: space-between;
-	width: 70%;
+	width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 1%;
 	padding: 2%;
 	border: 6px ridge #9a08a3;
 	border-radius: 15px;
-	background: linear-gradient(180deg, rgba(31,161,176,1) 0%, rgba(65,212,255,1) 58%, rgba(13,238,205,1) 100%);
+	background: radial-gradient(circle, rgba(155,30,255,1) 0%, rgba(24,9,64,1) 100%);
 }
 
 
@@ -179,6 +235,26 @@ input {
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	
+}
+
+.backface-on {
+  -webkit-backface-visibility: visible;
+     -moz-backface-visibility: visible;
+          backface-visibility: visible;
+}
+
+.tilted {
+  transform: rotateY(45deg);
+}
+
+@keyframes tiltin {
+    0%    { transform: rotateY(0deg);}
+    50%   { transform: rotateY(0deg);}
+    100%  { transform: rotateY(45deg);}
+}
+@keyframes tiltout {
+    0%    { transform: rotateY(45deg);}
+    100%  { transform: rotateY(0deg);}
 }
 
 @keyframes blink-slot {

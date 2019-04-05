@@ -3,7 +3,42 @@ const REEL_RADIUS = (266 / 2) / Math.tan (Math.PI / SLOTS_PER_REEL);
 const IMAGE_ARRAY = ['bar-3', 'bar', 'bar-2', 'seven', 'cherry'];
 var previousTotal = 0;
 var currentTotal = 0;
+var userMode = true;
+var iconSelectedValues = [];
+var iconSelected = [];
+var levelSelected = ["Top", "Top", "Top"];
 
+
+        window.onload = function(){
+
+        for (let i = 1; i < 4; i++) {
+            	
+            iconSelected[i - 1] = new IconSelect("my-icon-select" + i);
+
+            document.getElementById('my-icon-select' + i).addEventListener('changed', function(e){
+               iconSelectedValues[i - 1] = iconSelected[i - 1].getSelectedValue();
+               console.log(iconSelectedValues);
+            });
+            
+            var icons = [];
+            icons.push({'iconFilePath':'images/3XBAR.png', 'iconValue':'1'});
+            icons.push({'iconFilePath':'images/BAR.png', 'iconValue':'2'});
+            icons.push({'iconFilePath':'images/2XBAR.png', 'iconValue':'3'});
+            icons.push({'iconFilePath':'images/7.png', 'iconValue':'4'});
+            icons.push({'iconFilePath':'images/cherry.png', 'iconValue':'5'});
+            
+            iconSelected[i - 1].refresh(icons);
+
+            $("#developer-mode-TCB-select" + i).change(function(){
+       			levelSelected[i - 1] = $(this).children("option:selected").val();
+       			console.log(levelSelected);
+    	   	});
+
+
+
+       	}
+	       	
+       }
 
 
 /* In reel they will be seen in BOTTOM-line (TOP-BOTTOM case) (TOP + 3)
@@ -46,7 +81,20 @@ var currentTotal = 0;
 */ 
 
 
+function userModeOn(data) {
+	userMode = true;
+	$(data).css("border", "solid 2px rgb(66, 244, 244)");
+	$("#mode>button:nth-child(2)").css("border", "2px solid black");
+	$('#container-for-developer').hide();
+}
 
+function developerModeOn(data) {
+	userMode = false;
+	$(data).css("border", "solid 2px rgb(66, 244, 244)");
+	$("#mode>button:nth-child(1)").css("border", "2px solid black");
+
+	$('#container-for-developer').show();
+}
 
 function createSlots (wheel) {
 	var slotAngle = 360 / SLOTS_PER_REEL;
@@ -81,36 +129,58 @@ function spin(timer) {
 
 	for(var i = 1; i < 4; i++) {
 
-	   var seed = getSeed();
-	   var previousSeed = -1;
+		var seed = getSeed();
+		var previousSeed = -1;
 
-	   var previousSeed = $('#wheel' + i).attr('class').slice(14);
-
-
-	   while (parseInt(previousSeed) == seed) {
-	   		seed = getSeed();
-	   }
-
-	   var centerOrTopOrBottom = getTopCenterBottom();
-
-	   // TT - Top, BB - bottom, CC- center
+		var previousSeed = $('#wheel' + i).attr('class').slice(14);
 
 
-	   if (centerOrTopOrBottom >= 0 &&  centerOrTopOrBottom < 3) {
-	   		bctSeed[i - 1] = 'TT' + seed; 
-	   		$('#wheel'+ i).attr('class', 'wheel spin-TT-' + seed)
-	   					  .css('animation', 'back-spin 1s, spin-TT-' + seed + ' ' + (timer + i * 0.5) + 's');
+		while (parseInt(previousSeed) == seed) {
+			seed = getSeed();
+		}
 
-	   	} else if (centerOrTopOrBottom >= 3 && centerOrTopOrBottom < 6 ) {
-	   		bctSeed[i - 1] = 'BB' + seed; 
-	   		$('#wheel'+ i).attr('class', 'wheel spin-BB-' + seed)
-	   					  .css('animation', 'back-spin 1s, spin-BB-' + seed + ' ' + (timer + i * 0.5) + 's');
-	   	} else {
-	   		bctSeed[i - 1] = 'CC' + seed;
-	   		$('#wheel'+ i).attr('class', 'wheel spin-CC-' + seed)
-	   					  .css('animation', 'back-spin 1s, spin-CC-' + seed + ' ' + (timer + i * 0.5) + 's');
-	   	}
-	   	
+		var centerOrTopOrBottom = getTopCenterBottom();
+
+		if (userMode == true) {
+
+			if (centerOrTopOrBottom >= 0 &&  centerOrTopOrBottom < 3) {
+				bctSeed[i - 1] = 'TT' + seed; 
+				$('#wheel'+ i).attr('class', 'wheel spin-TT-' + seed)
+				.css('animation', 'back-spin 1s, spin-TT-' + seed + ' ' + (timer + i * 0.5) + 's');
+
+			} else if (centerOrTopOrBottom >= 3 && centerOrTopOrBottom < 6 ) {
+				bctSeed[i - 1] = 'BB' + seed; 
+				$('#wheel'+ i).attr('class', 'wheel spin-BB-' + seed)
+				.css('animation', 'back-spin 1s, spin-BB-' + seed + ' ' + (timer + i * 0.5) + 's');
+			} else {
+				bctSeed[i - 1] = 'CC' + seed;
+				$('#wheel'+ i).attr('class', 'wheel spin-CC-' + seed)
+				.css('animation', 'back-spin 1s, spin-CC-' + seed + ' ' + (timer + i * 0.5) + 's');
+			}
+		} else {
+
+			if ("Top" == levelSelected[i - 1]) {
+				seed = (iconSelectedValues[i - 1]);
+
+				bctSeed[i - 1] = 'TT' + seed; 
+				$('#wheel'+ i).attr('class', 'wheel spin-TT-' + seed)
+				.css('animation', 'back-spin 1s, spin-TT-' + seed + ' ' + (timer + i * 0.5) + 's');
+
+			} else if ("Bottom" == levelSelected[i - 1]) {
+				seed = (parseInt(iconSelectedValues[i - 1]) - 1);
+				bctSeed[i - 1] = 'BB' + seed; 
+				$('#wheel'+ i).attr('class', 'wheel spin-BB-' + seed)
+				.css('animation', 'back-spin 1s, spin-BB-' + seed + ' ' + (timer + i * 0.5) + 's');
+
+			} else if ("Center" == levelSelected[i - 1]) {
+				
+				seed = (parseInt(iconSelectedValues[i - 1]) + 2);
+				bctSeed[i - 1] = 'CC' + seed;
+				$('#wheel'+ i).attr('class', 'wheel spin-CC-' + seed)
+				.css('animation', 'back-spin 1s, spin-CC-' + seed + ' ' + (timer + i * 0.5) + 's');
+			}
+		}
+
  	}
 
  	var playerWinCombinations = checkWinComb(bctSeed);
@@ -176,7 +246,7 @@ function checkWinComb(data) {
 			} if (countCenter == 3) {
 
 				var playerComb = '';
-				playerComb = '' + data[0].slice(0,2) + data[1].slice(0,2) + data[2].slice(0,2);  
+				playerComb = '' + data[0].slice(2) + data[1].slice(2) + data[2].slice(2);  
 				for (var key in dictCC) {
 					for (var i = 0; i < dictCC[key].length; i++) {
 						if (dictCC[key][i] == playerComb) {
@@ -186,6 +256,8 @@ function checkWinComb(data) {
 					} 
 				}
 			}
+
+			console.log(playerWinCombinations);
 
 			return playerWinCombinations;
 		}
@@ -209,6 +281,12 @@ function blinksAndIncrement(data) {
 						targetSlot = (parseInt(data[j].charAt(i + 1))) % 10;
 						targetSlotReflected = (targetSlot + 5) % 10;
 					}
+
+					if (data[j].slice(0, 2) == "CC") {
+						targetSlot = (parseInt(data[j].charAt(i + 1)) + 3) % 10;
+						targetSlotReflected = (targetSlot + 5) % 10;
+					}
+
 
 					$('#wheel'+ i).find('*').each(function() {
 						
@@ -248,14 +326,15 @@ function blinksAndIncrement(data) {
 
 }
 
-function updateCredit() {
+function updateCredit(data) {
 	var credit = parseInt($('#input-credit').val());
 
 	if (credit) {
 		if (credit <= 5000 && credit >= 0) {
 			$('#credit').text(credit);
 			$('.spin').attr("disabled", false);
-			$('input').hide();
+			$(data).hide();
+			$('#input-credit').hide();
 		} else {
 			Swal.fire({
   		  	  type: 'error',
@@ -376,6 +455,34 @@ $(document).ready(function() {
 		createSlots($('#wheel' + i))
 	}
 
+
+	$('#xray').on('click',function(){
+ 		//var isChecked = $('#xray:checked');
+ 		var tilt = 'tiltout';
+ 		
+    if($(this).is(':checked')) {
+ 			tilt = 'tiltin';
+ 			
+ 			$('.slot').addClass('backface-on');
+ 			$('#container-for-reels').css('animation',tilt + ' 2s 1');
+ 			$('#container-for-reels').css('overflow','visible');
+
+			setTimeout(function(){
+			  $('#container-for-reels').toggleClass('tilted');
+			},2000);
+ 		} else {
+      tilt = 'tiltout';
+ 			$('#container-for-reels').css({'animation':tilt + ' 2s 1'});
+
+			setTimeout(function(){
+	 			$('#container-for-reels').toggleClass('tilted');
+	 			$('.slot').removeClass('backface-on');
+	 			$('#container-for-reels').css('overflow','hidden');
+	 			
+	 		},1900);
+ 		}
+ 	})
+
  	//spin start
  	$('.spin').on('click', function(){
 
@@ -386,7 +493,6 @@ $(document).ready(function() {
  		for (var i = 0; i < 3; i++) {
 
  			$('#wheel' + i).find('*').each(function() {
- 				console.log($(this));
  				$(this).css('animation-name', 'none');
  						
  			})
